@@ -139,11 +139,9 @@ namespace Grams.Code_Analysis
                         return new LiteralExpressionSyntax(keywordToken, value);
                     }
                 case SyntaxKind.IdentifierToken:
-                    {                       
-
+                    {
                         var identifierToken = NextToken();
                         return new NameExpressionSyntax(identifierToken);
-
                     }
 
                 default:
