@@ -20,11 +20,11 @@ namespace Grams.Code_Analysis
 
             if(diagnostics.Any())            
                 return new EvaluationResult(diagnostics, null);
-            
+
 
             var evaluator = new Evaluator(boundExpression);
             var value = evaluator.Evaluate();
-            return new EvaluationResult(diagnostics, value);
+            return new EvaluationResult(Array.Empty<Diagnostic>(), value);
         }
     }
 }

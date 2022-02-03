@@ -4,7 +4,7 @@
     {
         private readonly SyntaxToken[] _tokens;
         private int _position;
-        private List<string> _diagnostics = new List<string>();
+        private DiagnosticBag _diagnostics = new DiagnosticBag();
 
         public Parser(string text)
         {
@@ -38,7 +38,8 @@
             return _tokens[index];
         }
 
-        public IEnumerable<string> Diagnostics => _diagnostics;
+        public DiagnosticBag Diagnostics => _diagnostics;
+
         private SyntaxToken Current => Peek(0);
 
         private SyntaxToken NextToken()
@@ -53,7 +54,7 @@
             if (Current.Kind == kind)
                 return NextToken();
 
-            _diagnostics.Add($"ERROR: unexpected token <{Current.Kind}>, expected <{kind}>");
+            _diagnostics.ReportUnexpectedToken(Current.Span, Current.Kind, kind);
             return new SyntaxToken(kind, Current.Position, null, null);
         }
 
