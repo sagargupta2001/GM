@@ -140,4 +140,3 @@ namespace Grams.Tests.CodeAnalysis.Syntax
         }
     }
 }
-}
