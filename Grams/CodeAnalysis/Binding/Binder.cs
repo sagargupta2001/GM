@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Immutable;
 using Grams.CodeAnalysis.Binding;
 using Grams.CodeAnalysis.Syntax;
-using static Grams.Code_Analysis.BinaryExpressionSyntax;
 
 namespace Grams.Code_Analysis.Binding
 {

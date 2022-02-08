@@ -1,7 +1,6 @@
 ﻿using Grams.Code_Analysis;
 using Xunit;
 using System.Collections.Generic;
-using System.Linq;
 using Grams.CodeAnalysis.Syntax;
 
 namespace Grams.Tests.CodeAnalysis.Syntax

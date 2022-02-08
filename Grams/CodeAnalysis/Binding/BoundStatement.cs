@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Grams.Code_Analysis;
+﻿using Grams.Code_Analysis;
 using Grams.Code_Analysis.Binding;
 
 namespace Grams.CodeAnalysis.Binding
