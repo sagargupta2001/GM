@@ -25,7 +25,7 @@ namespace Grams.Code_Analysis
                 case BoundNodeKind.LiteralExpression:
                     return EvaluateLiteralExpression((BoundLiteralExpression)node);
                 case BoundNodeKind.VariableExpression:
-                    return this.EvaluateVariableExpression((BoundVariableExpression)node);
+                    return EvaluateVariableExpression((BoundVariableExpression)node);
                 case BoundNodeKind.AssignmentExpression:
                     return EvaluateAssignmentExpression((BoundAssignmentExpression)node);
                 case BoundNodeKind.UnaryExpression:
