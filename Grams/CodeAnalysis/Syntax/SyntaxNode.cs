@@ -43,17 +43,28 @@ namespace Grams.Code_Analysis
 
         private static void PrettyPrint(TextWriter writer, SyntaxNode node, string indent = "", bool isLast = true)
         {
+            var isToConsole = writer == Console.Out;
             var marker = isLast ? "└──" : "├──";
+
+            if (isToConsole)
+                Console.ForegroundColor = ConsoleColor.DarkGray;
 
             writer.Write(indent);
             writer.Write(marker);
+
+            if (isToConsole)
+                Console.ForegroundColor = node is SyntaxToken ? ConsoleColor.Blue : ConsoleColor.Cyan;
+
             writer.Write(node.Kind);
 
-            if (node is SyntaxToken t && t.Value != null)
+            if (node is SyntaxToken {Value: { }} t)
             {
                 writer.Write(" ");
                 writer.Write(t.Value);
             }
+
+            if (isToConsole)
+                Console.ResetColor();
 
             writer.WriteLine();
 
@@ -67,11 +78,9 @@ namespace Grams.Code_Analysis
 
         public override string ToString()
         {
-            using (var writer = new StringWriter())
-            {
-                WriteTo(writer);
-                return writer.ToString();
-            }
+            using var writer = new StringWriter();
+            WriteTo(writer);
+            return writer.ToString();
         }
     }
 }
