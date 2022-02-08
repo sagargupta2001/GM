@@ -111,11 +111,11 @@ namespace Grams.Tests.CodeAnalysis.Syntax
         {
             return new[]
             {
-                (SyntaxKind.WhiteSpaceToken, " "),
-                (SyntaxKind.WhiteSpaceToken, "  "),
-                (SyntaxKind.WhiteSpaceToken, "\r"),
-                (SyntaxKind.WhiteSpaceToken, "\n"),
-                (SyntaxKind.WhiteSpaceToken, "\r\n"),
+                (SyntaxKind.WhitespaceToken, " "),
+                (SyntaxKind.WhitespaceToken, "  "),
+                (SyntaxKind.WhitespaceToken, "\r"),
+                (SyntaxKind.WhitespaceToken, "\n"),
+                (SyntaxKind.WhitespaceToken, "\r\n"),
             };
         }
 

@@ -31,8 +31,8 @@ namespace Grams.Tests.CodeAnalysis
         [InlineData("false", false)]
         [InlineData("!true", false)]
         [InlineData("!false", true)]
-        [InlineData("(a = 10) * a", 100)]
-        public void SyntaxFact_GetText_RoundTrips(string text, object expectedValue)
+        [InlineData("{ var a = 0 (a = 10) * a }", 100)]
+        public void Evaluator_Computes_CorrectValues(string text, object expectedValue)
         {
             var syntaxTree = SyntaxTree.Parse(text);
             var compilation = new Compilation(syntaxTree);

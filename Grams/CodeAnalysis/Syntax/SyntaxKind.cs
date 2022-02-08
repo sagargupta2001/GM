@@ -5,26 +5,37 @@
         // Tokens
         BadToken,
         EndOfFileToken,
-        WhiteSpaceToken,
-        NumberToken,       
+        WhitespaceToken,
+        NumberToken,
         PlusToken,
         MinusToken,
         StarToken,
         SlashToken,
-        OpenParenthesisToken,
-        CloseParenthesisToken,
         BangToken,
         EqualsToken,
         AmpersandAmpersandToken,
         PipePipeToken,
         EqualsEqualsToken,
         BangEqualsToken,
+        OpenParenthesisToken,
+        CloseParenthesisToken,
+        OpenBraceToken,
+        CloseBraceToken,
         IdentifierToken,
-        
 
         // Keywords
         FalseKeyword,
+        LetKeyword,
         TrueKeyword,
+        VarKeyword,
+
+        // Nodes
+        CompilationUnit,
+
+        // Statements
+        BlockStatement,
+        VariableDeclaration,
+        ExpressionStatement,
 
         // Expressions
         LiteralExpression,
@@ -33,6 +44,5 @@
         BinaryExpression,
         ParenthesizedExpression,
         AssignmentExpression,
-
     }
 }

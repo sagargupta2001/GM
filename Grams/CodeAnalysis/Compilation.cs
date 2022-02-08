@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Grams.Code_Analysis.Binding;
+using Grams.CodeAnalysis.Binding;
 
 namespace Grams.Code_Analysis
 {

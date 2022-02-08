@@ -57,7 +57,7 @@ namespace Grams.Code_Analysis
 
             writer.Write(node.Kind);
 
-            if (node is SyntaxToken {Value: { }} t)
+            if (node is SyntaxToken t && t.Value != null)
             {
                 writer.Write(" ");
                 writer.Write(t.Value);
@@ -78,9 +78,11 @@ namespace Grams.Code_Analysis
 
         public override string ToString()
         {
-            using var writer = new StringWriter();
-            WriteTo(writer);
-            return writer.ToString();
+            using (var writer = new StringWriter())
+            {
+                WriteTo(writer);
+                return writer.ToString();
+            }
         }
     }
 }

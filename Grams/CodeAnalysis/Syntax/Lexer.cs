@@ -4,8 +4,8 @@ namespace Grams.Code_Analysis
 {
     internal sealed class Lexer
     {
-        private readonly SourceText _text;
         private readonly DiagnosticBag _diagnostics = new DiagnosticBag();
+        private readonly SourceText _text;
 
         private int _position;
 
@@ -21,12 +21,13 @@ namespace Grams.Code_Analysis
         public DiagnosticBag Diagnostics => _diagnostics;
 
         private char Current => Peek(0);
-        private char Lookahead => Peek(1);
 
+        private char Lookahead => Peek(1);
 
         private char Peek(int offset)
         {
             var index = _position + offset;
+
             if (index >= _text.Length)
                 return '\0';
 
@@ -35,7 +36,6 @@ namespace Grams.Code_Analysis
 
         public SyntaxToken Lex()
         {
-
             _start = _position;
             _kind = SyntaxKind.BadToken;
             _value = null;
@@ -43,7 +43,7 @@ namespace Grams.Code_Analysis
             switch (Current)
             {
                 case '\0':
-                    return new SyntaxToken(SyntaxKind.EndOfFileToken, _position, "\0", null);
+                    _kind = SyntaxKind.EndOfFileToken;
                     break;
                 case '+':
                     _kind = SyntaxKind.PlusToken;
@@ -69,12 +69,19 @@ namespace Grams.Code_Analysis
                     _kind = SyntaxKind.CloseParenthesisToken;
                     _position++;
                     break;
+                case '{':
+                    _kind = SyntaxKind.OpenBraceToken;
+                    _position++;
+                    break;
+                case '}':
+                    _kind = SyntaxKind.CloseBraceToken;
+                    _position++;
+                    break;
                 case '&':
                     if (Lookahead == '&')
                     {
                         _kind = SyntaxKind.AmpersandAmpersandToken;
                         _position += 2;
-                        break;
                     }
                     break;
                 case '|':
@@ -82,7 +89,6 @@ namespace Grams.Code_Analysis
                     {
                         _kind = SyntaxKind.PipePipeToken;
                         _position += 2;
-                        break;
                     }
                     break;
                 case '=':
@@ -93,8 +99,8 @@ namespace Grams.Code_Analysis
                     }
                     else
                     {
-                        _position++;
                         _kind = SyntaxKind.EqualsEqualsToken;
+                        _position++;
                     }
                     break;
                 case '!':
@@ -119,7 +125,7 @@ namespace Grams.Code_Analysis
                 case '7':
                 case '8':
                 case '9':
-                    ReadNumberToken();
+                    ReadNumber();
                     break;
                 case ' ':
                 case '\t':
@@ -142,7 +148,6 @@ namespace Grams.Code_Analysis
                         _position++;
                     }
                     break;
-
             }
 
             var length = _position - _start;
@@ -158,10 +163,10 @@ namespace Grams.Code_Analysis
             while (char.IsWhiteSpace(Current))
                 _position++;
 
-            _kind = SyntaxKind.WhiteSpaceToken;
+            _kind = SyntaxKind.WhitespaceToken;
         }
 
-        private void ReadNumberToken()
+        private void ReadNumber()
         {
             while (char.IsDigit(Current))
                 _position++;
@@ -184,6 +189,5 @@ namespace Grams.Code_Analysis
             var text = _text.ToString(_start, length);
             _kind = SyntaxFacts.GetKeywordKind(text);
         }
-
     }
 }
