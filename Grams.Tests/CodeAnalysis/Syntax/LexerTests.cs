@@ -9,12 +9,12 @@ namespace Grams.Tests.CodeAnalysis.Syntax
     public class LexerTests
     {
         [Fact]
-        public void Lexer_Tests_AllTokens()
+        public void LexerTests_CoversAllTokens()
         {
             var tokenKinds = Enum.GetValues(typeof(SyntaxKind))
-                .Cast<SyntaxKind>()
-                .Where(k => k.ToString().EndsWith("Keyword") ||
-                            k.ToString().EndsWith("Token"));
+                                 .Cast<SyntaxKind>()
+                                 .Where(k => k.ToString().EndsWith("Keyword") ||
+                                             k.ToString().EndsWith("Token"));
 
             var testedTokenKinds = GetTokens().Concat(GetSeparators()).Select(t => t.kind);
 
@@ -31,6 +31,7 @@ namespace Grams.Tests.CodeAnalysis.Syntax
         public void Lexer_Lexes_Token(SyntaxKind kind, string text)
         {
             var tokens = SyntaxTree.ParseTokens(text);
+
             var token = Assert.Single(tokens);
             Assert.Equal(kind, token.Kind);
             Assert.Equal(text, token.Text);
@@ -38,16 +39,15 @@ namespace Grams.Tests.CodeAnalysis.Syntax
 
         [Theory]
         [MemberData(nameof(GetTokenPairsData))]
-        public void Lexer_Lexes_TokenPairs(SyntaxKind t1Kind, string t1Text, SyntaxKind t2Kind, string t2Text)
+        public void Lexer_Lexes_TokenPairs(SyntaxKind t1Kind, string t1Text,
+                                           SyntaxKind t2Kind, string t2Text)
         {
             var text = t1Text + t2Text;
             var tokens = SyntaxTree.ParseTokens(text).ToArray();
 
             Assert.Equal(2, tokens.Length);
-
             Assert.Equal(tokens[0].Kind, t1Kind);
             Assert.Equal(tokens[0].Text, t1Text);
-
             Assert.Equal(tokens[1].Kind, t2Kind);
             Assert.Equal(tokens[1].Text, t2Text);
         }
@@ -88,23 +88,23 @@ namespace Grams.Tests.CodeAnalysis.Syntax
                 yield return new object[] { t.t1Kind, t.t1Text, t.separatorKind, t.separatorText, t.t2Kind, t.t2Text };
         }
 
-
         private static IEnumerable<(SyntaxKind kind, string text)> GetTokens()
         {
             var fixedTokens = Enum.GetValues(typeof(SyntaxKind))
-                .Cast<SyntaxKind>()
-                .Select(k => (kind: k, text: SyntaxFacts.GetText(k)))
-                .Where(t => t.text != null);
+                                  .Cast<SyntaxKind>()
+                                  .Select(k => (kind: k, text: SyntaxFacts.GetText(k)))
+                                  .Where(t => t.text != null);
+
 
             var dynamicTokens = new[]
-           {
+            {
                 (SyntaxKind.NumberToken, "1"),
                 (SyntaxKind.NumberToken, "123"),
                 (SyntaxKind.IdentifierToken, "a"),
                 (SyntaxKind.IdentifierToken, "abc"),
             };
-            return fixedTokens.Concat(dynamicTokens);
 
+            return fixedTokens.Concat(dynamicTokens);
         }
 
         private static IEnumerable<(SyntaxKind kind, string text)> GetSeparators()
@@ -115,11 +115,9 @@ namespace Grams.Tests.CodeAnalysis.Syntax
                 (SyntaxKind.WhitespaceToken, "  "),
                 (SyntaxKind.WhitespaceToken, "\r"),
                 (SyntaxKind.WhitespaceToken, "\n"),
-                (SyntaxKind.WhitespaceToken, "\r\n"),
+                (SyntaxKind.WhitespaceToken, "\r\n")
             };
         }
-
-
 
         private static bool RequiresSeparator(SyntaxKind t1Kind, SyntaxKind t2Kind)
         {
@@ -153,6 +151,18 @@ namespace Grams.Tests.CodeAnalysis.Syntax
             if (t1Kind == SyntaxKind.EqualsToken && t2Kind == SyntaxKind.EqualsEqualsToken)
                 return true;
 
+            if (t1Kind == SyntaxKind.LessToken && t2Kind == SyntaxKind.EqualsToken)
+                return true;
+
+            if (t1Kind == SyntaxKind.LessToken && t2Kind == SyntaxKind.EqualsEqualsToken)
+                return true;
+
+            if (t1Kind == SyntaxKind.GreaterToken && t2Kind == SyntaxKind.EqualsToken)
+                return true;
+
+            if (t1Kind == SyntaxKind.GreaterToken && t2Kind == SyntaxKind.EqualsEqualsToken)
+                return true;
+
             return false;
         }
 
@@ -169,8 +179,8 @@ namespace Grams.Tests.CodeAnalysis.Syntax
         }
 
         private static IEnumerable<(SyntaxKind t1Kind, string t1Text,
-                                     SyntaxKind separatorKind, string separatorText,
-                                     SyntaxKind t2Kind, string t2Text)> GetTokenPairsWithSeparator()
+                                    SyntaxKind separatorKind, string separatorText,
+                                    SyntaxKind t2Kind, string t2Text)> GetTokenPairsWithSeparator()
         {
             foreach (var t1 in GetTokens())
             {
