@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Grams.Code_Analysis.Binding;
 using Grams.CodeAnalysis.Binding;
+using Grams.CodeAnalysis.Lowering;
 
 namespace Grams.Code_Analysis
 {
@@ -11,7 +12,6 @@ namespace Grams.Code_Analysis
         public Compilation(SyntaxTree syntaxTree)
             : this(null, syntaxTree)
         {
-            //SyntaxTree = syntaxTree;
         }
 
         private Compilation(Compilation previous, SyntaxTree syntaxTree)
@@ -48,9 +48,22 @@ namespace Grams.Code_Analysis
             if (diagnostics.Any())
                 return new EvaluationResult(diagnostics, null);
 
-            var evaluator = new Evaluator(GlobalScope.Statement, variables);
+            var statement = GetStatement();
+            var evaluator = new Evaluator(statement, variables);
             var value = evaluator.Evaluate();
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
+        }
+
+        public void EmitTree(TextWriter writer)
+        {
+            var statement = GetStatement();
+            statement.WriteTo(writer);
+        }
+
+        private BoundBlockStatement GetStatement()
+        {
+            var result = GlobalScope.Statement;
+            return Lowerer.Lower(result);
         }
     }
 }
