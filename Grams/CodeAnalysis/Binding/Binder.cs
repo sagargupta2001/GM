@@ -78,6 +78,8 @@ namespace Grams.Code_Analysis.Binding
                     return BindIfStatement((IfStatementSyntax)syntax);
                 case SyntaxKind.WhileStatement:
                     return BindWhileStatement((WhileStatementSyntax)syntax);
+                case SyntaxKind.DoWhileStatement:
+                    return BindDoWhileStatement((DoWhileStatementSyntax)syntax);
                 case SyntaxKind.ForStatement:
                     return BindForStatement((ForStatementSyntax)syntax);
                 case SyntaxKind.ExpressionStatement:
@@ -125,6 +127,13 @@ namespace Grams.Code_Analysis.Binding
             var condition = BindExpression(syntax.Condition, TypeSymbol.Bool);
             var body = BindStatement(syntax.Body);
             return new BoundWhileStatement(condition, body);
+        }
+
+        private BoundStatement BindDoWhileStatement(DoWhileStatementSyntax syntax)
+        {
+            var body = BindStatement(syntax.Body);
+            var condition = BindExpression(syntax.Condition, TypeSymbol.Bool);
+            return new BoundDoWhileStatement(body, condition);
         }
 
         private BoundStatement BindForStatement(ForStatementSyntax syntax)
@@ -305,16 +314,16 @@ namespace Grams.Code_Analysis.Binding
                 return new BoundErrorExpression();
             }
 
-            if (syntax.Arguments.Count != function.Parameter.Length)
+            if (syntax.Arguments.Count != function.Parameters.Length)
             {
-                _diagnostics.ReportWrongArgumentCount(syntax.Span, function.Name, function.Parameter.Length, syntax.Arguments.Count);
+                _diagnostics.ReportWrongArgumentCount(syntax.Span, function.Name, function.Parameters.Length, syntax.Arguments.Count);
                 return new BoundErrorExpression();
             }
 
             for (var i = 0; i < syntax.Arguments.Count; i++)
             {
                 var argument = boundArguments[i];
-                var parameter = function.Parameter[i];
+                var parameter = function.Parameters[i];
 
                 if (argument.Type != parameter.Type)
                 {
@@ -346,7 +355,7 @@ namespace Grams.Code_Analysis.Binding
             var variable = new VariableSymbol(name, isReadOnly, type);
 
             if (declare && !_scope.TryDeclareVariable(variable))
-                _diagnostics.ReportVariableAlreadyDeclared(identifier.Span, name);
+                _diagnostics.ReportSymbolAlreadyDeclared(identifier.Span, name);
 
             return variable;
         }
