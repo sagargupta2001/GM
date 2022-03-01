@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Grams.Code_Analysis;
+﻿using Grams.Code_Analysis;
 
 namespace GM
 {
-    internal sealed class MinskRepl : Repl
+    internal sealed class GramsRepl : Repl
     {
         private Compilation _previous;
         private bool _showTree;
@@ -21,10 +16,15 @@ namespace GM
             {
                 var isKeyword = token.Kind.ToString().EndsWith("Keyword");
                 var isNumber = token.Kind == SyntaxKind.NumberToken;
+                var isIdentifier = token.Kind == SyntaxKind.IdentifierToken;
 
                 if (isKeyword)
                     Console.ForegroundColor = ConsoleColor.Blue;
-                else if (!isNumber)
+                else if (isIdentifier)
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                else if (isNumber)
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                else
                     Console.ForegroundColor = ConsoleColor.DarkGray;
 
                 Console.Write(token.Text);
@@ -63,9 +63,18 @@ namespace GM
             if (string.IsNullOrEmpty(text))
                 return true;
 
+            var lastTwoLinesAreBlank = text.Split(Environment.NewLine)
+                                           .Reverse()
+                                           .TakeWhile(s => string.IsNullOrEmpty(s))
+                                           .Take(2)
+                                           .Count() == 2;
+            if (lastTwoLinesAreBlank)
+                return true;
+
             var syntaxTree = SyntaxTree.Parse(text);
 
-            if (syntaxTree.Diagnostics.Any())
+            // Use Statement because we need to exclude the EndOfFileToken.
+            if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
                 return false;
 
             return true;

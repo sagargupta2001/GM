@@ -1,4 +1,6 @@
-﻿namespace Grams.Code_Analysis.Binding
+﻿using Grams.CodeAnalysis.Symbols;
+
+namespace Grams.Code_Analysis.Binding
 {
     internal sealed class BoundAssignmentExpression : BoundExpression
     {
@@ -9,7 +11,7 @@
         }
 
         public override BoundNodeKind Kind => BoundNodeKind.AssignmentExpression;
-        public override Type Type => Expression.Type;
+        public override TypeSymbol Type => Expression.Type;
         public VariableSymbol Variable { get; }
         public BoundExpression Expression { get; }
     }

@@ -1,4 +1,6 @@
-﻿using Grams.CodeAnalysis.Text;
+﻿using System.Text;
+using Grams.CodeAnalysis.Symbols;
+using Grams.CodeAnalysis.Text;
 
 namespace Grams.Code_Analysis
 {
@@ -157,6 +159,9 @@ namespace Grams.Code_Analysis
                         _position++;
                     }
                     break;
+                case '"':
+                    ReadString();
+                    break;
                 case '0':
                 case '1':
                 case '2':
@@ -200,6 +205,48 @@ namespace Grams.Code_Analysis
             return new SyntaxToken(_kind, _start, text, _value);
         }
 
+        private void ReadString()
+        {
+            // Skip the current quote
+            _position++;
+
+            var sb = new StringBuilder();
+            var done = false;
+
+            while (!done)
+            {
+                switch (Current)
+                {
+                    case '\0':
+                    case '\r':
+                    case '\n':
+                        var span = new TextSpan(_start, 1);
+                        _diagnostics.ReportUnterminatedString(span);
+                        done = true;
+                        break;
+                    case '"':
+                        if (Lookahead == '"')
+                        {
+                            sb.Append(Current);
+                            _position += 2;
+                        }
+                        else
+                        {
+                            _position++;
+                            done = true;
+                        }
+                        break;
+                    default:
+                        sb.Append(Current);
+                        _position++;
+                        break;
+                }
+            }
+
+            _kind = SyntaxKind.StringToken;
+            _value = sb.ToString();
+        }
+
         private void ReadWhiteSpace()
         {
             while (char.IsWhiteSpace(Current))
@@ -216,7 +263,7 @@ namespace Grams.Code_Analysis
             var length = _position - _start;
             var text = _text.ToString(_start, length);
             if (!int.TryParse(text, out var value))
-                _diagnostics.ReportInvalidNumber(new TextSpan(_start, length), text, typeof(int));
+                _diagnostics.ReportInvalidNumber(new TextSpan(_start, length), text, TypeSymbol.Int);
 
             _value = value;
             _kind = SyntaxKind.NumberToken;

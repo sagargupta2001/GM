@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Grams.CodeAnalysis
+namespace Grams.CodeAnalysis.Symbols
 {
-    internal sealed class LabelSymbol
+    public abstract class Symbol
     {
-        internal LabelSymbol(string name)
+        private protected Symbol(string name)
         {
             Name = name;
         }
 
+        public abstract SymbolKind Kind { get; }
         public string Name { get; }
-
         public override string ToString() => Name;
     }
 }

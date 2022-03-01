@@ -9,7 +9,22 @@ namespace Grams.Tests.CodeAnalysis.Syntax
     public class LexerTests
     {
         [Fact]
-        public void LexerTests_CoversAllTokens()
+        public void Lexer_Lexes_UnterminatedString()
+        {
+            var text = "\"text";
+            var tokens = SyntaxTree.ParseTokens(text, out var diagnostics);
+
+            var token = Assert.Single(tokens);
+            Assert.Equal(SyntaxKind.StringToken, token.Kind);
+            Assert.Equal(text, token.Text);
+
+            var diagnostic = Assert.Single(diagnostics);
+            Assert.Equal(new TextSpan(0, 1), diagnostic.Span);
+            Assert.Equal("Unterminated string literal.", diagnostic.Message);
+        }
+
+        [Fact]
+        public void Lexer_Covers_AllTokens()
         {
             var tokenKinds = Enum.GetValues(typeof(SyntaxKind))
                                  .Cast<SyntaxKind>()
@@ -102,6 +117,8 @@ namespace Grams.Tests.CodeAnalysis.Syntax
                 (SyntaxKind.NumberToken, "123"),
                 (SyntaxKind.IdentifierToken, "a"),
                 (SyntaxKind.IdentifierToken, "abc"),
+                (SyntaxKind.StringToken, "\"Test\""),
+                (SyntaxKind.StringToken, "\"Te\"\"st\""),
             };
 
             return fixedTokens.Concat(dynamicTokens);
@@ -139,6 +156,9 @@ namespace Grams.Tests.CodeAnalysis.Syntax
             if (t1Kind == SyntaxKind.NumberToken && t2Kind == SyntaxKind.NumberToken)
                 return true;
 
+            if (t1Kind == SyntaxKind.StringToken && t2Kind == SyntaxKind.StringToken)
+                return true;
+
             if (t1Kind == SyntaxKind.BangToken && t2Kind == SyntaxKind.EqualsToken)
                 return true;
 
@@ -162,6 +182,7 @@ namespace Grams.Tests.CodeAnalysis.Syntax
 
             if (t1Kind == SyntaxKind.GreaterToken && t2Kind == SyntaxKind.EqualsEqualsToken)
                 return true;
+
             if (t1Kind == SyntaxKind.AmpersandToken && t2Kind == SyntaxKind.AmpersandToken)
                 return true;
 

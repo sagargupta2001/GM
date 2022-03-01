@@ -8,7 +8,7 @@ namespace Grams
     {
         private static void Main()
         {
-            var repl = new MinskRepl();
+            var repl = new GramsRepl();
             repl.Run();
         }
     }

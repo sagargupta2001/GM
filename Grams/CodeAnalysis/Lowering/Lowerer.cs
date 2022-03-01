@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Immutable;
 using Grams.Code_Analysis;
 using Grams.Code_Analysis.Binding;
 using Grams.CodeAnalysis.Binding;
+using Grams.CodeAnalysis.Symbols;
+using VariableSymbol = Grams.Code_Analysis.VariableSymbol;
 
 namespace Grams.CodeAnalysis.Lowering
 {
@@ -18,10 +15,10 @@ namespace Grams.CodeAnalysis.Lowering
         {
         }
 
-        private LabelSymbol GenerateLabel()
+        private BoundLabel GenerateLabel()
         {
             var name = $"Label{++_labelCount}";
-            return new LabelSymbol(name);
+            return new BoundLabel(name);
         }
 
         public static BoundBlockStatement Lower(BoundStatement statement)
@@ -154,7 +151,8 @@ namespace Grams.CodeAnalysis.Lowering
             //
             // {
             //      var <var> = <lower>
-            //      while (<var> <= <upper>)
+            //      let upperBound = <upper>
+            //      while (<var> <= upperBound)
             //      {
             //          <body>
             //          <var> = <var> + 1
@@ -163,24 +161,30 @@ namespace Grams.CodeAnalysis.Lowering
 
             var variableDeclaration = new BoundVariableDeclaration(node.Variable, node.LowerBound);
             var variableExpression = new BoundVariableExpression(node.Variable);
+            var upperBoundSymbol = new VariableSymbol("upperBound", true, TypeSymbol.Int);
+            var upperBoundDeclaration = new BoundVariableDeclaration(upperBoundSymbol, node.UpperBound);
             var condition = new BoundBinaryExpression(
                 variableExpression,
-                BoundBinaryOperator.Bind(SyntaxKind.LessOrEqualsToken, typeof(int), typeof(int)),
-                node.UpperBound
+                BoundBinaryOperator.Bind(SyntaxKind.LessOrEqualsToken, TypeSymbol.Int, TypeSymbol.Int),
+                new BoundVariableExpression(upperBoundSymbol)
             );
             var increment = new BoundExpressionStatement(
                 new BoundAssignmentExpression(
                     node.Variable,
                     new BoundBinaryExpression(
-                            variableExpression,
-                            BoundBinaryOperator.Bind(SyntaxKind.PlusToken, typeof(int), typeof(int)),
-                            new BoundLiteralExpression(1)
+                        variableExpression,
+                        BoundBinaryOperator.Bind(SyntaxKind.PlusToken, TypeSymbol.Int, TypeSymbol.Int),
+                        new BoundLiteralExpression(1)
                     )
                 )
             );
             var whileBody = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(node.Body, increment));
             var whileStatement = new BoundWhileStatement(condition, whileBody);
-            var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(variableDeclaration, whileStatement));
+            var result = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(
+                variableDeclaration,
+                upperBoundDeclaration,
+                whileStatement
+            ));
 
             return RewriteStatement(result);
         }

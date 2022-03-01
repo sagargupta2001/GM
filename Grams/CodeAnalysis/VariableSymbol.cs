@@ -1,8 +1,10 @@
-﻿namespace Grams.Code_Analysis
+﻿using Grams.CodeAnalysis.Symbols;
+
+namespace Grams.Code_Analysis
 {
     public sealed class VariableSymbol
     {
-        internal VariableSymbol(string name, bool isReadOnly, Type type)
+        internal VariableSymbol(string name, bool isReadOnly, TypeSymbol type)
         {
             Name = name;
             IsReadOnly = isReadOnly;
@@ -11,7 +13,7 @@
 
         public string Name { get; }
         public bool IsReadOnly { get; }
-        public Type Type { get; }
+        public TypeSymbol Type { get; }
 
         public override string ToString() => Name;
     }
