@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Immutable;
 using Grams.Code_Analysis.Binding;
 
 namespace Grams.CodeAnalysis.Binding
@@ -26,6 +21,12 @@ namespace Grams.CodeAnalysis.Binding
                     return RewriteDoWhileStatement((BoundDoWhileStatement)node);
                 case BoundNodeKind.ForStatement:
                     return RewriteForStatement((BoundForStatement)node);
+                case BoundNodeKind.TryCatchStatement:
+                    return RewriteTryCatchStatement((BoundTryCatchStatement)node);
+                case BoundNodeKind.BeginTryStatement:
+                    return RewriteBeginTryStatement((BoundBeginTryStatement)node);
+                case BoundNodeKind.EndTryStatement:
+                    return RewriteEndTryStatement((BoundEndTryStatement)node);
                 case BoundNodeKind.LabelStatement:
                     return RewriteLabelStatement((BoundLabelStatement)node);
                 case BoundNodeKind.GotoStatement:
@@ -117,6 +118,26 @@ namespace Grams.CodeAnalysis.Binding
                 return node;
 
             return new BoundForStatement(node.Variable, lowerBound, upperBound, body);
+        }
+
+        protected virtual BoundStatement RewriteTryCatchStatement(BoundTryCatchStatement node)
+        {
+            var tryBody = RewriteStatement(node.TryBody);
+            var catchBody = RewriteStatement(node.CatchBody);
+            if (tryBody == node.TryBody && catchBody == node.CatchBody)
+                return node;
+
+            return new BoundTryCatchStatement(tryBody, catchBody);
+        }
+
+        protected virtual BoundStatement RewriteBeginTryStatement(BoundBeginTryStatement node)
+        {
+            return node;
+        }
+
+        protected virtual BoundStatement RewriteEndTryStatement(BoundEndTryStatement node)
+        {
+            return node;
         }
 
         protected virtual BoundStatement RewriteLabelStatement(BoundLabelStatement node)

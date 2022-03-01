@@ -53,8 +53,16 @@ namespace Grams.Code_Analysis
                 return new EvaluationResult(program.Diagnostics.ToImmutableArray(), null);
 
             var evaluator = new Evaluator(program, variables);
-            var value = evaluator.Evaluate();
-            return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
+
+            try
+            {
+                var value = evaluator.Evaluate();
+                return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
+            }
+            catch (EvaluatorException ex)
+            {
+                return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, ex);
+            }
         }
 
         public void EmitTree(TextWriter writer)

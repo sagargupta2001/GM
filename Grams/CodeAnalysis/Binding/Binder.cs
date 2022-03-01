@@ -168,6 +168,8 @@ namespace Grams.CodeAnalysis.Binding
                     return BindDoWhileStatement((DoWhileStatementSyntax)syntax);
                 case SyntaxKind.ForStatement:
                     return BindForStatement((ForStatementSyntax)syntax);
+                case SyntaxKind.TryCatchStatement:
+                    return BindTryCatchStatement((TryCatchStatementSyntax)syntax);
                 case SyntaxKind.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementSyntax)syntax);
                 default:
@@ -250,6 +252,13 @@ namespace Grams.CodeAnalysis.Binding
             _scope = _scope.Parent;
 
             return new BoundForStatement(variable, lowerBound, upperBound, body);
+        }
+
+        private BoundStatement BindTryCatchStatement(TryCatchStatementSyntax syntax)
+        {
+            var tryBody = BindStatement(syntax.TryBody);
+            var catchBody = BindStatement(syntax.CatchBody);
+            return new BoundTryCatchStatement(tryBody, catchBody);
         }
 
         private BoundStatement BindExpressionStatement(ExpressionStatementSyntax syntax)

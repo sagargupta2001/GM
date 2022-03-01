@@ -119,22 +119,16 @@ namespace Grams.Code_Analysis
         {
             var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
 
-            var parseNextParameter = true;
-            while (parseNextParameter &&
-                   Current.Kind != SyntaxKind.CloseParenthesisToken &&
+            while (Current.Kind != SyntaxKind.CloseParenthesisToken &&
                    Current.Kind != SyntaxKind.EndOfFileToken)
             {
                 var parameter = ParseParameter();
                 nodesAndSeparators.Add(parameter);
 
-                if (Current.Kind == SyntaxKind.CommaToken)
+                if (Current.Kind != SyntaxKind.CloseParenthesisToken)
                 {
                     var comma = MatchToken(SyntaxKind.CommaToken);
                     nodesAndSeparators.Add(comma);
-                }
-                else
-                {
-                    parseNextParameter = false;
                 }
             }
 
@@ -171,6 +165,8 @@ namespace Grams.Code_Analysis
                     return ParseDoWhileStatement();
                 case SyntaxKind.ForKeyword:
                     return ParseForStatement();
+                case SyntaxKind.TryKeyword:
+                    return ParseTryCatchStatement();
                 default:
                     return ParseExpressionStatement();
             }
@@ -266,6 +262,15 @@ namespace Grams.Code_Analysis
             var whileKeyword = MatchToken(SyntaxKind.WhileKeyword);
             var condition = ParseExpression();
             return new DoWhileStatementSyntax(doKeyword, body, whileKeyword, condition);
+        }
+
+        private StatementSyntax ParseTryCatchStatement()
+        {
+            var tryKeyword = MatchToken(SyntaxKind.TryKeyword);
+            var tryBody = ParseStatement();
+            var catchKeyword = MatchToken(SyntaxKind.CatchKeyword);
+            var catchBody = ParseStatement();
+            return new TryCatchStatementSyntax(tryKeyword, tryBody, catchKeyword, catchBody);
         }
 
         private StatementSyntax ParseForStatement()
@@ -405,22 +410,16 @@ namespace Grams.Code_Analysis
         {
             var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
 
-            var parseNextArgument = true;
-            while (parseNextArgument &&
-                   Current.Kind != SyntaxKind.CloseParenthesisToken &&
+            while (Current.Kind != SyntaxKind.CloseParenthesisToken &&
                    Current.Kind != SyntaxKind.EndOfFileToken)
             {
                 var expression = ParseExpression();
                 nodesAndSeparators.Add(expression);
 
-                if (Current.Kind == SyntaxKind.CommaToken)
+                if (Current.Kind != SyntaxKind.CloseParenthesisToken)
                 {
                     var comma = MatchToken(SyntaxKind.CommaToken);
                     nodesAndSeparators.Add(comma);
-                }
-                else
-                {
-                    parseNextArgument = false;
                 }
             }
 

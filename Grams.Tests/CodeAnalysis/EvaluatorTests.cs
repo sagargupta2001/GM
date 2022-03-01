@@ -1,6 +1,7 @@
 ﻿using System;
 using Grams.Code_Analysis;
 using System.Collections.Generic;
+using Grams.CodeAnalysis;
 using Grams.CodeAnalysis.Symbols;
 using Xunit;
 
@@ -72,9 +73,19 @@ namespace Grams.Tests.CodeAnalysis
         [InlineData("{ var result = 0 for i = 1 to 10 { result = result + i } result }", 55)]
         [InlineData("{ var a = 10 for i = 1 to (a = a - 1) { } a }", 9)]
         [InlineData("{ var a = 0 do a = a + 1 while a < 10 a}", 10)]
+        [InlineData("{ try { int(\"1\") } catch { 2 } }", 1)]
+        [InlineData("{ try { int(\"a\") } catch { 2 } }", 2)]
         public void Evaluator_Computes_CorrectValues(string text, object expectedValue)
         {
             AssertValue(text, expectedValue);
+        }
+
+        [Theory]
+        [InlineData("int(\"9999999999999999999999\")", typeof(OverflowException))]
+        [InlineData("int(\"abc\")", typeof(FormatException))]
+        public void Evaluator_Throws_Exception(string text, Type expectedInnerException)
+        {
+            AssertThrows(text, expectedInnerException);
         }
 
         [Fact]
@@ -107,43 +118,6 @@ namespace Grams.Tests.CodeAnalysis
             ";
 
             var diagnostics = @"
-                Unexpected token <CloseParenthesisToken>, expected <IdentifierToken>.
-                Unexpected token <EndOfFileToken>, expected <CloseBraceToken>.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
-
-        [Fact]
-        public void Evaluator_InvokeFunctionArguments_NoInfiniteLoop()
-        {
-            var text = @"
-                print(""Hi""[[=]][)]
-            ";
-
-            var diagnostics = @"
-                Unexpected token <EqualsToken>, expected <CloseParenthesisToken>.
-                Unexpected token <EqualsToken>, expected <IdentifierToken>.
-                Unexpected token <CloseParenthesisToken>, expected <IdentifierToken>.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
-
-        [Fact]
-        public void Evaluator_FunctionParameters_NoInfiniteLoop()
-        {
-            var text = @"
-                function hi(name: string[[[=]]][)]
-                {
-                    print(""Hi "" + name + ""!"" )
-                }[]
-            ";
-
-            var diagnostics = @"
-                Unexpected token <EqualsToken>, expected <CloseParenthesisToken>.
-                Unexpected token <EqualsToken>, expected <OpenBraceToken>.
-                Unexpected token <EqualsToken>, expected <IdentifierToken>.
                 Unexpected token <CloseParenthesisToken>, expected <IdentifierToken>.
                 Unexpected token <EndOfFileToken>, expected <CloseBraceToken>.
             ";
@@ -362,6 +336,18 @@ namespace Grams.Tests.CodeAnalysis
 
             Assert.Empty(result.Diagnostics);
             Assert.Equal(expectedValue, result.Value);
+        }
+
+        private static void AssertThrows(string text, Type expectedInnerException)
+        {
+            var syntaxTree = SyntaxTree.Parse(text);
+            var compilation = new Compilation(syntaxTree);
+            var variables = new Dictionary<VariableSymbol, object>();
+            var result = compilation.Evaluate(variables);
+
+            Assert.Empty(result.Diagnostics);
+            var exception = Assert.IsType<EvaluatorException>(result.Value);
+            Assert.IsType(expectedInnerException, exception.InnerException);
         }
 
         private void AssertDiagnostics(string text, string diagnosticText)

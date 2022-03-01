@@ -1,4 +1,5 @@
 ﻿using Grams.Code_Analysis;
+using Grams.CodeAnalysis;
 using Grams.CodeAnalysis.Symbols;
 
 namespace GM
@@ -104,7 +105,7 @@ namespace GM
             {
                 if (result.Value != null)
                 {
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = result.Value is EvaluatorException ? ConsoleColor.Red : ConsoleColor.White;
                     Console.WriteLine(result.Value);
                     Console.ResetColor();
                 }

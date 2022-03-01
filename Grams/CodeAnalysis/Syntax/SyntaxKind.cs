@@ -46,6 +46,8 @@
         VarKeyword,
         WhileKeyword,
         DoKeyword,
+        TryKeyword,
+        CatchKeyword,
 
         // Nodes
         CompilationUnit,
@@ -63,6 +65,7 @@
         DoWhileStatement,
         ForStatement,
         ExpressionStatement,
+        TryCatchStatement,
 
         // Expressions
         LiteralExpression,

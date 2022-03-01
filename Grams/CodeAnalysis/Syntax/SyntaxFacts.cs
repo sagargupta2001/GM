@@ -77,6 +77,10 @@
                     return SyntaxKind.WhileKeyword;
                 case "do":
                     return SyntaxKind.DoKeyword;
+                case "try":
+                    return SyntaxKind.TryKeyword;
+                case "catch":
+                    return SyntaxKind.CatchKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -176,6 +180,10 @@
                     return "while";
                 case SyntaxKind.DoKeyword:
                     return "do";
+                case SyntaxKind.TryKeyword:
+                    return "try";
+                case SyntaxKind.CatchKeyword:
+                    return "catch";
                 default:
                     return null;
             }
