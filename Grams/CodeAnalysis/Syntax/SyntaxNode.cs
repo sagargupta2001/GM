@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Grams.CodeAnalysis.Syntax;
 
 namespace Grams.Code_Analysis
 {
@@ -26,6 +27,12 @@ namespace Grams.Code_Analysis
                 {
                     var child = (SyntaxNode)property.GetValue(this);
                     if (child != null)
+                        yield return child;
+                }
+                else if (typeof(SeparatedSyntaxList).IsAssignableFrom(property.PropertyType))
+                {
+                    var separatedSyntaxList = (SeparatedSyntaxList)property.GetValue(this);
+                    foreach (var child in separatedSyntaxList.GetWithSeparators())
                         yield return child;
                 }
                 else if (typeof(IEnumerable<SyntaxNode>).IsAssignableFrom(property.PropertyType))

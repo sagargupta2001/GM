@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Grams.CodeAnalysis.Symbols
 {
-    public sealed class VariableSymbol : Symbol
+    public class VariableSymbol : Symbol
     {
         internal VariableSymbol(string name, bool isReadOnly, TypeSymbol type)
             : base(name)
