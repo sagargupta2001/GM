@@ -28,7 +28,6 @@ namespace Grams.CodeAnalysis
         private object EvaluateStatement(BoundBlockStatement body)
         {
             var labelToIndex = new Dictionary<BoundLabel, int>();
-            var tryBlocks = new Stack<int>();
 
             for (var i = 0; i < body.Statements.Length; i++)
             {
@@ -41,51 +40,38 @@ namespace Grams.CodeAnalysis
             while (index < body.Statements.Length)
             {
                 var s = body.Statements[index];
-                try
-                {
-                    switch (s.Kind)
-                    {
-                        case BoundNodeKind.VariableDeclaration:
-                            EvaluateVariableDeclaration((BoundVariableDeclaration)s);
-                            index++;
-                            break;
-                        case BoundNodeKind.ExpressionStatement:
-                            EvaluateExpressionStatement((BoundExpressionStatement)s);
-                            index++;
-                            break;
-                        case BoundNodeKind.GotoStatement:
-                            var gs = (BoundGotoStatement)s;
-                            index = labelToIndex[gs.Label];
-                            break;
-                        case BoundNodeKind.ConditionalGotoStatement:
-                            var cgs = (BoundConditionalGotoStatement)s;
-                            var condition = (bool)EvaluateExpression(cgs.Condition);
-                            if (condition == cgs.JumpIfTrue)
-                                index = labelToIndex[cgs.Label];
-                            else
-                                index++;
-                            break;
-                        case BoundNodeKind.LabelStatement:
-                            index++;
-                            break;
-                        case BoundNodeKind.BeginTryStatement:
-                            var bts = (BoundBeginTryStatement)s;
-                            tryBlocks.Push(labelToIndex[bts.ErrorLabel]);
-                            index++;
-                            break;
-                        case BoundNodeKind.EndTryStatement:
-                            var ets = (BoundEndTryStatement)s;
-                            tryBlocks.Pop();
-                            index++;
-                            break;
-                        default:
-                            throw new Exception($"Unexpected node {s.Kind}");
-                    }
 
-                }
-                catch (EvaluatorException) when (tryBlocks.Count > 0)
+                switch (s.Kind)
                 {
-                    index = tryBlocks.Pop();
+                    case BoundNodeKind.VariableDeclaration:
+                        EvaluateVariableDeclaration((BoundVariableDeclaration)s);
+                        index++;
+                        break;
+                    case BoundNodeKind.ExpressionStatement:
+                        EvaluateExpressionStatement((BoundExpressionStatement)s);
+                        index++;
+                        break;
+                    case BoundNodeKind.GotoStatement:
+                        var gs = (BoundGotoStatement)s;
+                        index = labelToIndex[gs.Label];
+                        break;
+                    case BoundNodeKind.ConditionalGotoStatement:
+                        var cgs = (BoundConditionalGotoStatement)s;
+                        var condition = (bool)EvaluateExpression(cgs.Condition);
+                        if (condition == cgs.JumpIfTrue)
+                            index = labelToIndex[cgs.Label];
+                        else
+                            index++;
+                        break;
+                    case BoundNodeKind.LabelStatement:
+                        index++;
+                        break;
+                    case BoundNodeKind.ReturnStatement:
+                        var rs = (BoundReturnStatement)s;
+                        _lastValue = rs.Expression == null ? null : EvaluateExpression(rs.Expression);
+                        return _lastValue;
+                    default:
+                        throw new Exception($"Unexpected node {s.Kind}");
                 }
             }
 
@@ -258,16 +244,9 @@ namespace Grams.CodeAnalysis
                 _locals.Push(locals);
 
                 var statement = _program.Functions[node.Function];
+                var result = EvaluateStatement(statement);
 
-                object result;
-                try
-                {
-                    result = EvaluateStatement(statement);
-                }
-                finally
-                {
-                    _locals.Pop();
-                }
+                _locals.Pop();
 
                 return result;
             }
@@ -276,21 +255,14 @@ namespace Grams.CodeAnalysis
         private object EvaluateConversionExpression(BoundConversionExpression node)
         {
             var value = EvaluateExpression(node.Expression);
-            try
-            {
-                if (node.Type == TypeSymbol.Bool)
-                    return Convert.ToBoolean(value);
-                else if (node.Type == TypeSymbol.Int)
-                    return Convert.ToInt32(value);
-                else if (node.Type == TypeSymbol.String)
-                    return Convert.ToString(value);
-                else
-                    throw new Exception($"Unexpected type {node.Type}");
-            }
-            catch (Exception ex) when (ex is FormatException || ex is OverflowException)
-            {
-                throw new EvaluatorException($"Cannot convert '{value}' to type '{node.Type}'.", ex);
-            }
+            if (node.Type == TypeSymbol.Bool)
+                return Convert.ToBoolean(value);
+            else if (node.Type == TypeSymbol.Int)
+                return Convert.ToInt32(value);
+            else if (node.Type == TypeSymbol.String)
+                return Convert.ToString(value);
+            else
+                throw new Exception($"Unexpected type {node.Type}");
         }
 
         private void Assign(VariableSymbol variable, object value)

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Grams.CodeAnalysis.Syntax;
 using Grams.CodeAnalysis.Text;
-using static Grams.Code_Analysis.BinaryExpressionSyntax;
 
 namespace Grams.Code_Analysis
 {
@@ -175,6 +174,8 @@ namespace Grams.Code_Analysis
                     return ParseBreakStatement();
                 case SyntaxKind.ContinueKeyword:
                     return ParseContinueStatement();
+                case SyntaxKind.ReturnKeyword:
+                    return ParseReturnStatement();
                 default:
                     return ParseExpressionStatement();
             }
@@ -294,6 +295,17 @@ namespace Grams.Code_Analysis
         {
             var keyword = MatchToken(SyntaxKind.ContinueKeyword);
             return new ContinueStatementSyntax(keyword);
+        }
+
+        private StatementSyntax ParseReturnStatement()
+        {
+            var keyword = MatchToken(SyntaxKind.ReturnKeyword);
+            var keywordLine = _text.GetLineIndex(keyword.Span.Start);
+            var currentLine = _text.GetLineIndex(Current.Span.Start);
+            var isEof = Current.Kind == SyntaxKind.EndOfFileToken;
+            var sameLine = !isEof && keywordLine == currentLine;
+            var expression = sameLine ? ParseExpression() : null;
+            return new ReturnStatementSyntax(keyword, expression);
         }
 
         private ExpressionStatementSyntax ParseExpressionStatement()

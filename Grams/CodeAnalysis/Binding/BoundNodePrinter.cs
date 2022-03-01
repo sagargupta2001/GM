@@ -47,6 +47,9 @@ namespace Grams.CodeAnalysis.Binding
                 case BoundNodeKind.ConditionalGotoStatement:
                     WriteConditionalGotoStatement((BoundConditionalGotoStatement)node, writer);
                     break;
+                case BoundNodeKind.ReturnStatement:
+                    WriteReturnStatement((BoundReturnStatement)node, writer);
+                    break;
                 case BoundNodeKind.ExpressionStatement:
                     WriteExpressionStatement((BoundExpressionStatement)node, writer);
                     break;
@@ -212,6 +215,17 @@ namespace Grams.CodeAnalysis.Binding
             node.Condition.WriteTo(writer);
             writer.WriteLine();
         }
+        private static void WriteReturnStatement(BoundReturnStatement node, IndentedTextWriter writer)
+        {
+            writer.WriteKeyword(SyntaxKind.ReturnKeyword);
+            if (node.Expression != null)
+            {
+                writer.WriteSpace();
+                node.Expression.WriteTo(writer);
+            }
+            writer.WriteLine();
+        }
+
 
         private static void WriteExpressionStatement(BoundExpressionStatement node, IndentedTextWriter writer)
         {

@@ -71,6 +71,8 @@
                     return SyntaxKind.IfKeyword;
                 case "let":
                     return SyntaxKind.LetKeyword;
+                case "return":
+                    return SyntaxKind.ReturnKeyword;
                 case "to":
                     return SyntaxKind.ToKeyword;
                 case "true":
@@ -174,6 +176,8 @@
                     return "if";
                 case SyntaxKind.LetKeyword:
                     return "let";
+                case SyntaxKind.ReturnKeyword:
+                    return "return";
                 case SyntaxKind.ToKeyword:
                     return "to";
                 case SyntaxKind.TrueKeyword:

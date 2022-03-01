@@ -43,6 +43,7 @@
         FunctionKeyword,
         IfKeyword,
         LetKeyword,
+        ReturnKeyword,
         ToKeyword,
         TrueKeyword,
         VarKeyword,
@@ -67,7 +68,7 @@
         BreakStatement,
         ContinueStatement,
         ExpressionStatement,
-        TryCatchStatement,
+        ReturnStatement,
 
         // Expressions
         LiteralExpression,
