@@ -3,7 +3,6 @@ using Grams.Code_Analysis;
 using Grams.Code_Analysis.Binding;
 using Grams.CodeAnalysis.Binding;
 using Grams.CodeAnalysis.Symbols;
-using VariableSymbol = Grams.Code_Analysis.VariableSymbol;
 
 namespace Grams.CodeAnalysis.Lowering
 {
@@ -184,7 +183,7 @@ namespace Grams.CodeAnalysis.Lowering
 
             var variableDeclaration = new BoundVariableDeclaration(node.Variable, node.LowerBound);
             var variableExpression = new BoundVariableExpression(node.Variable);
-            var upperBoundSymbol = new VariableSymbol("upperBound", true, TypeSymbol.Int);
+            var upperBoundSymbol = new LocalVariableSymbol("upperBound", true, TypeSymbol.Int);
             var upperBoundDeclaration = new BoundVariableDeclaration(upperBoundSymbol, node.UpperBound);
             var condition = new BoundBinaryExpression(
                 variableExpression,

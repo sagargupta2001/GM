@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Grams.CodeAnalysis.Symbols
+﻿namespace Grams.CodeAnalysis.Symbols
 {
-    public sealed class ParameterSymbol : VariableSymbol
+    public sealed class ParameterSymbol : LocalVariableSymbol
     {
         public ParameterSymbol(string name, TypeSymbol type)
             : base(name, isReadOnly: true, type)

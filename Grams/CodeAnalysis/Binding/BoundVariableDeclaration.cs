@@ -1,5 +1,5 @@
-﻿using Grams.Code_Analysis;
-using Grams.Code_Analysis.Binding;
+﻿using Grams.Code_Analysis.Binding;
+using Grams.CodeAnalysis.Symbols;
 
 namespace Grams.CodeAnalysis.Binding;
 

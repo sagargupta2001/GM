@@ -1,17 +1,18 @@
-﻿using Grams.Code_Analysis;
+﻿using System.Collections.Immutable;
+using Grams.Code_Analysis;
 
 namespace Grams.CodeAnalysis.Syntax
 {
     public sealed class CompilationUnitSyntax : SyntaxNode
     {
-        public CompilationUnitSyntax(StatementSyntax statement, SyntaxToken endOfFileToken)
+        public CompilationUnitSyntax(ImmutableArray<MemberSyntax> members, SyntaxToken endOfFileToken)
         {
-            Statement = statement;
+            Members = members;
             EndOfFileToken = endOfFileToken;
         }
 
         public override SyntaxKind Kind => SyntaxKind.CompilationUnit;
-        public StatementSyntax Statement { get; }
+        public ImmutableArray<MemberSyntax> Members { get; }
         public SyntaxToken EndOfFileToken { get; }
     }
 }
