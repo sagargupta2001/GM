@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Grams.Code_Analysis.Binding;
+﻿using Grams.Code_Analysis.Binding;
 
 namespace Grams.CodeAnalysis.Binding
 {
-    internal sealed class BoundWhileStatement : BoundStatement
+    internal sealed class BoundWhileStatement : BoundLoopStatement
     {
-        public BoundWhileStatement(BoundExpression condition, BoundStatement body)
+        public BoundWhileStatement(BoundExpression condition, BoundStatement body, BoundLabel breakLabel, BoundLabel continueLabel)
+            : base(breakLabel, continueLabel)
         {
             Condition = condition;
             Body = body;
@@ -19,4 +15,5 @@ namespace Grams.CodeAnalysis.Binding
         public BoundExpression Condition { get; }
         public BoundStatement Body { get; }
     }
+
 }

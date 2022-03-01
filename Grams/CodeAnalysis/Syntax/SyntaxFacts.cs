@@ -55,6 +55,10 @@
         {
             switch (text)
             {
+                case "break":
+                    return SyntaxKind.BreakKeyword;
+                case "continue":
+                    return SyntaxKind.ContinueKeyword;
                 case "else":
                     return SyntaxKind.ElseKeyword;
                 case "false":
@@ -77,10 +81,6 @@
                     return SyntaxKind.WhileKeyword;
                 case "do":
                     return SyntaxKind.DoKeyword;
-                case "try":
-                    return SyntaxKind.TryKeyword;
-                case "catch":
-                    return SyntaxKind.CatchKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -158,6 +158,10 @@
                     return ":";
                 case SyntaxKind.CommaToken:
                     return ",";
+                case SyntaxKind.BreakKeyword:
+                    return "break";
+                case SyntaxKind.ContinueKeyword:
+                    return "continue";
                 case SyntaxKind.ElseKeyword:
                     return "else";
                 case SyntaxKind.FalseKeyword:
@@ -180,10 +184,6 @@
                     return "while";
                 case SyntaxKind.DoKeyword:
                     return "do";
-                case SyntaxKind.TryKeyword:
-                    return "try";
-                case SyntaxKind.CatchKeyword:
-                    return "catch";
                 default:
                     return null;
             }

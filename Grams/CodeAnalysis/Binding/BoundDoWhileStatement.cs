@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Grams.Code_Analysis.Binding;
+﻿using Grams.Code_Analysis.Binding;
 
 namespace Grams.CodeAnalysis.Binding
 {
-    internal sealed class BoundDoWhileStatement : BoundStatement
+    internal sealed class BoundDoWhileStatement : BoundLoopStatement
     {
-        public BoundDoWhileStatement(BoundStatement body, BoundExpression condition)
+        public BoundDoWhileStatement(BoundStatement body, BoundExpression condition, BoundLabel breakLabel, BoundLabel continueLabel)
+            : base(breakLabel, continueLabel)
         {
             Body = body;
             Condition = condition;

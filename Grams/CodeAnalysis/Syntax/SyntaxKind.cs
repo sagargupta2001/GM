@@ -35,6 +35,8 @@
         IdentifierToken,
 
         // Keywords
+        BreakKeyword,
+        ContinueKeyword,
         ElseKeyword,
         FalseKeyword,
         ForKeyword,
@@ -46,8 +48,6 @@
         VarKeyword,
         WhileKeyword,
         DoKeyword,
-        TryKeyword,
-        CatchKeyword,
 
         // Nodes
         CompilationUnit,
@@ -64,6 +64,8 @@
         WhileStatement,
         DoWhileStatement,
         ForStatement,
+        BreakStatement,
+        ContinueStatement,
         ExpressionStatement,
         TryCatchStatement,
 

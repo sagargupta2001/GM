@@ -53,22 +53,29 @@ namespace Grams.Code_Analysis
                 return new EvaluationResult(program.Diagnostics.ToImmutableArray(), null);
 
             var evaluator = new Evaluator(program, variables);
-
-            try
-            {
-                var value = evaluator.Evaluate();
-                return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
-            }
-            catch (EvaluatorException ex)
-            {
-                return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, ex);
-            }
+            var value = evaluator.Evaluate();
+            return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
         }
 
         public void EmitTree(TextWriter writer)
         {
             var program = Binder.BindProgram(GlobalScope);
-            program.Statement.WriteTo(writer);
+
+            if (program.Statement.Statements.Any())
+            {
+                program.Statement.WriteTo(writer);
+            }
+            else
+            {
+                foreach (var functionBody in program.Functions)
+                {
+                    if (!GlobalScope.Functions.Contains(functionBody.Key))
+                        continue;
+
+                    functionBody.Key.WriteTo(writer);
+                    functionBody.Value.WriteTo(writer);
+                }
+            }
         }
     }
 }

@@ -21,12 +21,6 @@ namespace Grams.CodeAnalysis.Binding
                     return RewriteDoWhileStatement((BoundDoWhileStatement)node);
                 case BoundNodeKind.ForStatement:
                     return RewriteForStatement((BoundForStatement)node);
-                case BoundNodeKind.TryCatchStatement:
-                    return RewriteTryCatchStatement((BoundTryCatchStatement)node);
-                case BoundNodeKind.BeginTryStatement:
-                    return RewriteBeginTryStatement((BoundBeginTryStatement)node);
-                case BoundNodeKind.EndTryStatement:
-                    return RewriteEndTryStatement((BoundEndTryStatement)node);
                 case BoundNodeKind.LabelStatement:
                     return RewriteLabelStatement((BoundLabelStatement)node);
                 case BoundNodeKind.GotoStatement:
@@ -96,7 +90,7 @@ namespace Grams.CodeAnalysis.Binding
             if (condition == node.Condition && body == node.Body)
                 return node;
 
-            return new BoundWhileStatement(condition, body);
+            return new BoundWhileStatement(condition, body, node.BreakLabel, node.ContinueLabel);
         }
 
         protected virtual BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
@@ -106,7 +100,7 @@ namespace Grams.CodeAnalysis.Binding
             if (body == node.Body && condition == node.Condition)
                 return node;
 
-            return new BoundDoWhileStatement(body, condition);
+            return new BoundDoWhileStatement(body, condition, node.BreakLabel, node.ContinueLabel);
         }
 
         protected virtual BoundStatement RewriteForStatement(BoundForStatement node)
@@ -117,27 +111,7 @@ namespace Grams.CodeAnalysis.Binding
             if (lowerBound == node.LowerBound && upperBound == node.UpperBound && body == node.Body)
                 return node;
 
-            return new BoundForStatement(node.Variable, lowerBound, upperBound, body);
-        }
-
-        protected virtual BoundStatement RewriteTryCatchStatement(BoundTryCatchStatement node)
-        {
-            var tryBody = RewriteStatement(node.TryBody);
-            var catchBody = RewriteStatement(node.CatchBody);
-            if (tryBody == node.TryBody && catchBody == node.CatchBody)
-                return node;
-
-            return new BoundTryCatchStatement(tryBody, catchBody);
-        }
-
-        protected virtual BoundStatement RewriteBeginTryStatement(BoundBeginTryStatement node)
-        {
-            return node;
-        }
-
-        protected virtual BoundStatement RewriteEndTryStatement(BoundEndTryStatement node)
-        {
-            return node;
+            return new BoundForStatement(node.Variable, lowerBound, upperBound, body, node.BreakLabel, node.ContinueLabel);
         }
 
         protected virtual BoundStatement RewriteLabelStatement(BoundLabelStatement node)
