@@ -4,7 +4,8 @@ namespace Grams.CodeAnalysis.Syntax
 {
     public sealed class VariableDeclarationSyntax : StatementSyntax
     {
-        public VariableDeclarationSyntax(SyntaxToken keyword, SyntaxToken identifier, TypeClauseSyntax typeClause, SyntaxToken equalsToken, ExpressionSyntax initializer)
+        public VariableDeclarationSyntax(SyntaxTree syntaxTree, SyntaxToken keyword, SyntaxToken identifier, TypeClauseSyntax typeClause, SyntaxToken equalsToken, ExpressionSyntax initializer)
+            : base(syntaxTree)
         {
             Keyword = keyword;
             Identifier = identifier;

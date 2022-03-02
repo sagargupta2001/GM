@@ -1,8 +1,4 @@
-﻿using Grams.Code_Analysis;
-using System.Text;
-using GM;
-
-namespace Grams
+﻿namespace GM
 {
     internal static class Program
     {

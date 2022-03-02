@@ -2,16 +2,17 @@
 {
     public sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
     {
-        public ParenthesizedExpressionSyntax(SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParehthesisToken)
+        public ParenthesizedExpressionSyntax(SyntaxTree syntaxTree, SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken)
+            : base(syntaxTree)
         {
             OpenParenthesisToken = openParenthesisToken;
             Expression = expression;
-            CloseParehthesisToken = closeParehthesisToken;
+            CloseParenthesisToken = closeParenthesisToken;
         }
         public override SyntaxKind Kind => SyntaxKind.ParenthesizedExpression;
         public SyntaxToken OpenParenthesisToken { get; }
         public ExpressionSyntax Expression { get; }
-        public SyntaxToken CloseParehthesisToken { get; }
+        public SyntaxToken CloseParenthesisToken { get; }
 
 
     }

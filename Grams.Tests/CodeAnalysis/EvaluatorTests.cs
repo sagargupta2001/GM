@@ -373,22 +373,6 @@ namespace Grams.Tests.CodeAnalysis
             AssertDiagnostics(text, diagnostics);
         }
 
-        [Fact]
-        public void Evaluator_Variables_Can_Shadow_Functions()
-        {
-            var text = @"
-                {
-                    let print = 42
-                    [print](""test"")
-                }
-            ";
-
-            var diagnostics = @"
-                Function 'print' doesn't exist.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
 
         [Fact]
         public void Evaluator_Void_Function_Should_Not_Return_Value()
@@ -407,22 +391,7 @@ namespace Grams.Tests.CodeAnalysis
             AssertDiagnostics(text, diagnostics);
         }
 
-        [Fact]
-        public void Evaluator_Function_With_ReturnValue_Should_Not_Return_Void()
-        {
-            var text = @"
-                function test(): int
-                {
-                    [return]
-                }
-            ";
-
-            var diagnostics = @"
-                An expression of type 'int' expected.
-            ";
-
-            AssertDiagnostics(text, diagnostics);
-        }
+        
 
         [Fact]
         public void Evaluator_Not_All_Code_Paths_Return_Value()
@@ -587,7 +556,7 @@ namespace Grams.Tests.CodeAnalysis
                 Assert.Equal(expectedMessage, actualMessage);
 
                 var expectedSpan = annotatedText.Spans[i];
-                var actualSpan = result.Diagnostics[i].Span;
+                var actualSpan = result.Diagnostics[i].Location.Span;
                 Assert.Equal(expectedSpan, actualSpan);
             }
         }

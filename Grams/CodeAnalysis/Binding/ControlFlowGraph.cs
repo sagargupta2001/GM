@@ -1,4 +1,5 @@
-﻿using Grams.Code_Analysis;
+﻿using System.CodeDom.Compiler;
+using Grams.Code_Analysis;
 using Grams.Code_Analysis.Binding;
 using Grams.CodeAnalysis.Symbols;
 
@@ -46,9 +47,10 @@ namespace Grams.CodeAnalysis.Binding
                     return "<End>";
 
                 using (var writer = new StringWriter())
+                using (var indentedWriter = new IndentedTextWriter(writer))
                 {
                     foreach (var statement in Statements)
-                        statement.WriteTo(writer);
+                        statement.WriteTo(indentedWriter);
 
                     return writer.ToString();
                 }
@@ -173,7 +175,7 @@ namespace Grams.CodeAnalysis.Binding
                                 var cgs = (BoundConditionalGotoStatement)statement;
                                 var thenBlock = _blockFromLabel[cgs.Label];
                                 var elseBlock = next;
-                                var negatedCondition = Negate(cgs.Condition); ;
+                                var negatedCondition = Negate(cgs.Condition);
                                 var thenCondition = cgs.JumpIfTrue ? cgs.Condition : negatedCondition;
                                 var elseCondition = cgs.JumpIfTrue ? negatedCondition : cgs.Condition;
                                 Connect(current, thenBlock, thenCondition);
@@ -261,7 +263,7 @@ namespace Grams.CodeAnalysis.Binding
         {
             string Quote(string text)
             {
-                return "\"" + text.Replace("\"", "\\\"") + "\"";
+                return "\"" + text.TrimEnd().Replace("\\", "\\\\").Replace("\"", "\\\"").Replace(Environment.NewLine, "\\l") + "\"";
             }
 
             writer.WriteLine("digraph G {");
@@ -277,8 +279,8 @@ namespace Grams.CodeAnalysis.Binding
             foreach (var block in Blocks)
             {
                 var id = blockIds[block];
-                var label = Quote(block.ToString().Replace(Environment.NewLine, "\\l"));
-                writer.WriteLine($"    {id} [label = {label} shape = box]");
+                var label = Quote(block.ToString());
+                writer.WriteLine($"    {id} [label = {label}, shape = box]");
             }
 
             foreach (var branch in Branches)
@@ -307,8 +309,8 @@ namespace Grams.CodeAnalysis.Binding
 
             foreach (var branch in graph.End.Incoming)
             {
-                var lastStatement = branch.From.Statements.Last();
-                if (lastStatement.Kind != BoundNodeKind.ReturnStatement)
+                var lastStatement = branch.From.Statements.LastOrDefault();
+                if (lastStatement == null || lastStatement.Kind != BoundNodeKind.ReturnStatement)
                     return false;
             }
 

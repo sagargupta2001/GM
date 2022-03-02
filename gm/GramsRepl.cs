@@ -1,5 +1,5 @@
 ﻿using Grams.Code_Analysis;
-using Grams.CodeAnalysis;
+using Grams.CodeAnalysis.IO;
 using Grams.CodeAnalysis.Symbols;
 
 namespace GM
@@ -105,7 +105,7 @@ namespace GM
             {
                 if (result.Value != null)
                 {
-                    Console.ForegroundColor = result.Value is EvaluatorException ? ConsoleColor.Red : ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine(result.Value);
                     Console.ResetColor();
                 }
@@ -113,40 +113,7 @@ namespace GM
             }
             else
             {
-                foreach (var diagnostic in result.Diagnostics.OrderBy(diag => diag.Span, new TextSpanComparer()))
-                {
-                    var lineIndex = syntaxTree.Text.GetLineIndex(diagnostic.Span.Start);
-                    var line = syntaxTree.Text.Lines[lineIndex];
-                    var lineNumber = lineIndex + 1;
-                    var character = diagnostic.Span.Start - line.Start + 1;
-
-                    Console.WriteLine();
-
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.Write($"({lineNumber}, {character}): ");
-                    Console.WriteLine(diagnostic);
-                    Console.ResetColor();
-
-                    var prefixSpan = TextSpan.FromBounds(line.Start, diagnostic.Span.Start);
-                    var suffixSpan = TextSpan.FromBounds(diagnostic.Span.End, line.End);
-
-                    var prefix = syntaxTree.Text.ToString(prefixSpan);
-                    var error = syntaxTree.Text.ToString(diagnostic.Span);
-                    var suffix = syntaxTree.Text.ToString(suffixSpan);
-
-                    Console.Write("    ");
-                    Console.Write(prefix);
-
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.Write(error);
-                    Console.ResetColor();
-
-                    Console.Write(suffix);
-
-                    Console.WriteLine();
-                }
-
-                Console.WriteLine();
+                Console.Out.WriteDiagnostics(result.Diagnostics);
             }
         }
     }
